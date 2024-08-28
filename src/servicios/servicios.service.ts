@@ -20,7 +20,7 @@ export class ServiciosService {
   }
 
   async findAll() {
-    const servicios = await this.servicioModel.find();
+    const servicios = await this.servicioModel.find().sort({ createdAt: -1 });
 
     return {
       servicios,

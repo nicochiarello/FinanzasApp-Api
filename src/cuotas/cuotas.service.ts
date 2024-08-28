@@ -18,7 +18,10 @@ export class CuotasService {
   }
 
   async findAll() {
-    const cuotas = await this.cuotaModel.find().populate('card');
+    const cuotas = await this.cuotaModel
+      .find()
+      .populate('card')
+      .sort({ createdAt: -1 });
 
     return {
       cuotas,

@@ -18,7 +18,7 @@ export class GastosService {
   }
 
   async findAll() {
-    const gastos = await this.gastoModel.find();
+    const gastos = await this.gastoModel.find().sort({ createdAt: -1 });
 
     return {
       gastos,

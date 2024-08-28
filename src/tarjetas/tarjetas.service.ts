@@ -19,7 +19,7 @@ export class TarjetasService {
   }
 
   async findAll() {
-    const tarjetas = await this.servicioModel.find();
+    const tarjetas = await this.servicioModel.find().sort({ createdAt: -1 });
 
     return {
       tarjetas,
