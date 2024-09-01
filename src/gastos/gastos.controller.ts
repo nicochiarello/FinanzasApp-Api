@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { GastosService } from './gastos.service';
 import { CreateGastoDto } from './dto/create-gasto.dto';
@@ -21,8 +22,8 @@ export class GastosController {
   }
 
   @Get('/all')
-  findAll() {
-    return this.gastosService.findAll();
+  findAll(@Query('month') month?: number, @Query('year') year?: number) {
+    return this.gastosService.findAll(month, year);
   }
 
   @Get('/:id/details')

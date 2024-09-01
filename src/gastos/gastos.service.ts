@@ -10,15 +10,30 @@ export class GastosService {
   constructor(@InjectModel(Gasto.name) private gastoModel: Model<Gasto>) {}
 
   async create(createGastoDto: CreateGastoDto) {
-    await this.gastoModel.create(createGastoDto);
+    const createdGasto = await this.gastoModel.create(createGastoDto);
 
     return {
       message: 'Gasto creado correctamente',
+      item: createdGasto,
     };
   }
 
-  async findAll() {
-    const gastos = await this.gastoModel.find().sort({ createdAt: -1 });
+  async findAll(month: number, year: number) {
+    let query = {};
+
+    if (month && year) {
+      const startDate = new Date(year, month - 1, 1); // Primer día del mes
+      const endDate = new Date(year, month, 1); // Primer día del siguiente mes
+
+      query = {
+        createdAt: {
+          $gte: startDate,
+          $lt: endDate,
+        },
+      };
+    }
+
+    const gastos = await this.gastoModel.find(query).sort({ createdAt: -1 });
 
     return {
       gastos,
@@ -31,7 +46,7 @@ export class GastosService {
   }
 
   async update(id: string, updateGastoDto: UpdateGastoDto) {
-    await this.gastoModel.findByIdAndUpdate(
+    const updated = await this.gastoModel.findByIdAndUpdate(
       {
         _id: id,
       },
@@ -45,6 +60,7 @@ export class GastosService {
 
     return {
       message: 'Gasto actualizado correctamente',
+      item: updated,
     };
   }
 
