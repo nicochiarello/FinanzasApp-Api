@@ -17,9 +17,30 @@ export class CuotasService {
     };
   }
 
-  async findAll() {
+  async findAll(month?: number, year?: number, card?: string) {
+    let query = {};
+
+    if (month && year) {
+      const startDate = new Date(year, month - 1, 1); // Primer día del mes
+      const endDate = new Date(year, month, 1); // Primer día del siguiente mes
+
+      query = {
+        createdAt: {
+          $gte: startDate,
+          $lt: endDate,
+        },
+      };
+    }
+
+    if (card) {
+      query = {
+        ...query,
+        card,
+      };
+    }
+
     const cuotas = await this.cuotaModel
-      .find()
+      .find(query)
       .populate('card')
       .sort({ createdAt: -1 });
 

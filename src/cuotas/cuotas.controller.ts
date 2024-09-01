@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CuotasService } from './cuotas.service';
 import { CreateCuotaDto } from './dto/create-cuota.dto';
@@ -21,8 +22,12 @@ export class CuotasController {
   }
 
   @Get('all')
-  findAll() {
-    return this.cuotasService.findAll();
+  findAll(
+    @Query('month') month?: number,
+    @Query('year') year?: number,
+    @Query('card') card?: string,
+  ) {
+    return this.cuotasService.findAll(month, year, card);
   }
 
   @Get('/:id/details')
