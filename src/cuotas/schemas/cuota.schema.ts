@@ -25,7 +25,7 @@ export class Cuota {
   @Prop({
     required: true,
   })
-  remaining: number;
+  qty: number;
 
   @Prop({
     required: true,
