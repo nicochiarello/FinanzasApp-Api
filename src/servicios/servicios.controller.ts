@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ServiciosService } from './servicios.service';
 import { CreateServicioDto } from './dto/create-servicio.dto';
@@ -21,8 +22,8 @@ export class ServiciosController {
   }
 
   @Get('all')
-  findAll() {
-    return this.serviciosService.findAll();
+  findAll(@Query('year') year?: number, @Query('month') month?: number) {
+    return this.serviciosService.findAll(year, month);
   }
 
   @Get(':id/details')

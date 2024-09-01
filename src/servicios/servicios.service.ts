@@ -19,8 +19,22 @@ export class ServiciosService {
     };
   }
 
-  async findAll() {
-    const servicios = await this.servicioModel.find().sort({ createdAt: -1 });
+  async findAll(year: number, month: number) {
+    const query = {};
+
+    if (year && month) {
+      const startDate = new Date(year, month - 1, 1); // Primer día del mes
+      const endDate = new Date(year, month, 1); // Primer día del siguiente mes
+
+      query['createdAt'] = {
+        $gte: startDate,
+        $lt: endDate,
+      };
+    }
+
+    const servicios = await this.servicioModel
+      .find(query)
+      .sort({ createdAt: -1 });
 
     return {
       servicios,
