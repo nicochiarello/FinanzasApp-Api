@@ -10,19 +10,49 @@ export class CuotasService {
   constructor(@InjectModel(Cuota.name) private cuotaModel: Model<Cuota>) {}
 
   async create(createCuotaDto: CreateCuotaDto) {
-    await this.cuotaModel.create(createCuotaDto);
+    const { paid, qty, createdAt } = createCuotaDto;
+
+    // Usar la fecha proporcionada o la fecha actual
+    const initialDate = createdAt ? new Date(createdAt) : new Date();
+
+    // Crear la cuota inicial
+    const originalCuota = await this.cuotaModel.create({
+      ...createCuotaDto,
+      createdAt: initialDate,
+    });
+
+    // Crear cuotas restantes en una colección separada
+    const cuotasToCreate = [];
+
+    for (let i = paid + 1; i <= qty; i++) {
+      // Calcular la fecha de la cuota sumando meses
+      const cuotaDate = new Date(initialDate);
+      cuotaDate.setMonth(initialDate.getMonth() + i - paid);
+
+      cuotasToCreate.push({
+        ...createCuotaDto,
+        paid: i,
+        title: `${createCuotaDto.title}`,
+        originalCuotaId: originalCuota._id, // Asociar la cuota generada con la cuota original
+        createdAt: cuotaDate,
+      });
+    }
+
+    // Insertar todas las cuotas generadas
+    if (cuotasToCreate.length > 0) {
+      await this.cuotaModel.insertMany(cuotasToCreate);
+    }
 
     return {
-      message: 'Cuota creada correctamente',
+      message: 'Cuota creada correctamente, con cuotas generadas',
     };
   }
-
   async findAll(month?: number, year?: number, card?: string) {
     let query = {};
 
     if (month && year) {
-      const startDate = new Date(year, month - 1, 1); // Primer día del mes
-      const endDate = new Date(year, month, 1); // Primer día del siguiente mes
+      const startDate = new Date(Date.UTC(year, month - 1, 1)); // Primer día del mes en UTC
+      const endDate = new Date(Date.UTC(year, month, 1)); // Primer día del siguiente mes en UTC
 
       query = {
         createdAt: {
