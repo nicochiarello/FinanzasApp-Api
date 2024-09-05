@@ -20,15 +20,17 @@ export class ServiciosService {
   }
 
   async findAll(year: number, month: number) {
-    const query = {};
+    let query = {};
 
     if (year && month) {
-      const startDate = new Date(year, month - 1, 1); // Primer día del mes
-      const endDate = new Date(year, month, 1); // Primer día del siguiente mes
+      const startDate = new Date(Date.UTC(year, month - 1, 1)); // Primer día del mes en UTC
+      const endDate = new Date(Date.UTC(year, month, 1)); // Primer día del siguiente mes en UTC
 
-      query['createdAt'] = {
-        $gte: startDate,
-        $lt: endDate,
+      query = {
+        createdAt: {
+          $gte: startDate,
+          $lt: endDate,
+        },
       };
     }
 

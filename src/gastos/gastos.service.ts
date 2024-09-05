@@ -22,8 +22,8 @@ export class GastosService {
     let query = {};
 
     if (month && year) {
-      const startDate = new Date(year, month - 1, 1); // Primer día del mes
-      const endDate = new Date(year, month, 1); // Primer día del siguiente mes
+      const startDate = new Date(Date.UTC(year, month - 1, 1)); // Primer día del mes en UTC
+      const endDate = new Date(Date.UTC(year, month, 1)); // Primer día del siguiente mes en UTC
 
       query = {
         createdAt: {
