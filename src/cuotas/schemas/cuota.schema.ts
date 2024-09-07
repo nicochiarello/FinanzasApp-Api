@@ -29,6 +29,12 @@ export class Cuota {
 
   @Prop({
     required: true,
+    ref: 'User',
+  })
+  user: string;
+
+  @Prop({
+    required: true,
     ref: 'Tarjeta',
   })
   card: string;

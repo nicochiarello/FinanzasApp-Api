@@ -9,7 +9,7 @@ import { Model } from 'mongoose';
 export class CuotasService {
   constructor(@InjectModel(Cuota.name) private cuotaModel: Model<Cuota>) {}
 
-  async create(createCuotaDto: CreateCuotaDto) {
+  async create(createCuotaDto: CreateCuotaDto, userId: string) {
     const { paid, qty, createdAt } = createCuotaDto;
 
     // Usar la fecha proporcionada o la fecha actual
@@ -19,6 +19,7 @@ export class CuotasService {
     const originalCuota = await this.cuotaModel.create({
       ...createCuotaDto,
       createdAt: initialDate,
+      user: userId,
     });
 
     // Crear cuotas restantes en una colección separada
@@ -35,6 +36,7 @@ export class CuotasService {
         title: `${createCuotaDto.title}`,
         originalCuotaId: originalCuota._id, // Asociar la cuota generada con la cuota original
         createdAt: cuotaDate,
+        user: userId,
       });
     }
 
@@ -47,7 +49,7 @@ export class CuotasService {
       message: 'Cuota creada correctamente, con cuotas generadas',
     };
   }
-  async findAll(month?: number, year?: number, card?: string) {
+  async findAll(userId, month?: number, year?: number, card?: string) {
     let query = {};
 
     if (month && year) {
@@ -70,7 +72,7 @@ export class CuotasService {
     }
 
     const cuotas = await this.cuotaModel
-      .find(query)
+      .find({ ...query, user: userId })
       .populate('card')
       .sort({ createdAt: -1 });
 
@@ -80,11 +82,31 @@ export class CuotasService {
     };
   }
 
-  async findOne(id: string) {
-    return await this.cuotaModel.findById(id);
+  async findOne(id: string, userId: string) {
+    const foundCuota = await this.cuotaModel.findById(id);
+
+    if (!foundCuota) {
+      throw new Error('Cuota no encontrada');
+    }
+
+    if (foundCuota.user !== userId) {
+      throw new Error('No tienes permisos para ver esta cuota');
+    }
+
+    return foundCuota;
   }
 
-  async update(id: string, updateCuotaDto: UpdateCuotaDto) {
+  async update(id: string, updateCuotaDto: UpdateCuotaDto, userId: string) {
+    const foundCuota = await this.cuotaModel.findById(id);
+
+    if (!foundCuota) {
+      throw new Error('Cuota no encontrada');
+    }
+
+    if (foundCuota.user !== userId) {
+      throw new Error('No tienes permisos para actualizar esta cuota');
+    }
+
     await this.cuotaModel.findByIdAndUpdate(
       {
         _id: id,
@@ -102,8 +124,18 @@ export class CuotasService {
     };
   }
 
-  async remove(id: string) {
-    await this.cuotaModel.findByIdAndDelete(id);
+  async remove(id: string, userId: string) {
+    const foundCuota = await this.cuotaModel.findById(id);
+
+    if (!foundCuota) {
+      throw new Error('Cuota no encontrada');
+    }
+
+    if (foundCuota.user !== userId) {
+      throw new Error('No tienes permisos para eliminar esta cuota');
+    }
+
+    await this.cuotaModel.deleteOne({ _id: id });
 
     return {
       message: 'Cuota eliminada correctamente',
