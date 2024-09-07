@@ -8,21 +8,20 @@ import { InjectModel } from '@nestjs/mongoose';
 @Injectable()
 export class TarjetasService {
   constructor(
-    @InjectModel(Tarjeta.name) private servicioModel: Model<Tarjeta>,
+    @InjectModel(Tarjeta.name) private tarjetaModel: Model<Tarjeta>,
   ) {}
-  async create(createTarjetaDto: CreateTarjetaDto) {
-    await this.servicioModel.create(createTarjetaDto);
+  async create(createTarjetaDto: CreateTarjetaDto, userId: string) {
+    await this.tarjetaModel.create({ ...createTarjetaDto, user: userId });
 
     return {
       message: 'Tarjeta creada correctamente',
     };
   }
 
-  async findAll(req: Request) {
-    const user = req['user'];
-
-    console.log(user);
-    const tarjetas = await this.servicioModel.find().sort({ createdAt: -1 });
+  async findAll(userId) {
+    const tarjetas = await this.tarjetaModel
+      .find({ user: userId })
+      .sort({ createdAt: -1 });
 
     return {
       tarjetas,
@@ -30,12 +29,40 @@ export class TarjetasService {
     };
   }
 
-  async findOne(id: string) {
-    return await this.servicioModel.findById(id);
+  async findOne(id: string, userId: string) {
+    const foundTarjeta = await this.tarjetaModel.findById(id);
+
+    if (!foundTarjeta) {
+      return {
+        message: 'Tarjeta no encontrada',
+      };
+    }
+
+    if (foundTarjeta.user !== userId) {
+      return {
+        message: 'No tienes permisos para ver esta tarjeta',
+      };
+    }
+
+    return foundTarjeta;
   }
 
-  async update(id: string, updateTarjetaDto: UpdateTarjetaDto) {
-    await this.servicioModel.findByIdAndUpdate(
+  async update(id: string, updateTarjetaDto: UpdateTarjetaDto, userId: string) {
+    const foundTarjeta = await this.tarjetaModel.findById(id);
+
+    if (!foundTarjeta) {
+      return {
+        message: 'Tarjeta no encontrada',
+      };
+    }
+
+    if (foundTarjeta.user !== userId) {
+      return {
+        message: 'No tienes permisos para actualizar esta tarjeta',
+      };
+    }
+
+    await this.tarjetaModel.findByIdAndUpdate(
       {
         _id: id,
       },
@@ -52,8 +79,22 @@ export class TarjetasService {
     };
   }
 
-  async remove(id: string) {
-    await this.servicioModel.findByIdAndDelete(id);
+  async remove(id: string, userId: string) {
+    const foundTarjeta = await this.tarjetaModel.findById(id);
+
+    if (!foundTarjeta) {
+      return {
+        message: 'Tarjeta no encontrada',
+      };
+    }
+
+    if (foundTarjeta.user !== userId) {
+      return {
+        message: 'No tienes permisos para eliminar esta tarjeta',
+      };
+    }
+
+    await this.tarjetaModel.findByIdAndDelete(id);
 
     return {
       message: 'Tarjeta eliminada correctamente',

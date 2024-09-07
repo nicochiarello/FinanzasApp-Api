@@ -14,41 +14,47 @@ import { CreateTarjetaDto } from './dto/create-tarjeta.dto';
 import { UpdateTarjetaDto } from './dto/update-tarjeta.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('/api/tarjetas')
 export class TarjetasController {
   constructor(private readonly tarjetasService: TarjetasService) {}
 
   @Post('/create')
-  create(@Body() createTarjetaDto: CreateTarjetaDto) {
-    return this.tarjetasService.create(createTarjetaDto);
+  create(@Body() createTarjetaDto: CreateTarjetaDto, @Req() req) {
+    const user = req['user'];
+    const userId = user.sub;
+    return this.tarjetasService.create(createTarjetaDto, userId);
   }
 
-  @UseGuards(AuthGuard)
   @Get('/all')
   findAll(@Req() req: Request) {
-    return this.tarjetasService.findAll(req);
+    const user = req['user'];
+    const userId = user.sub;
+    return this.tarjetasService.findAll(userId);
   }
 
   @Get('/:id/details')
-  findOne(@Param('id') id: string) {
-    return this.tarjetasService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req) {
+    const user = req['user'];
+    const userId = user.sub;
+    return this.tarjetasService.findOne(id, userId);
   }
 
   @Patch('/:id/update')
-  update(@Param('id') id: string, @Body() updateTarjetaDto: UpdateTarjetaDto) {
-    return this.tarjetasService.update(id, updateTarjetaDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateTarjetaDto: UpdateTarjetaDto,
+    @Req() req,
+  ) {
+    const user = req['user'];
+    const userId = user.sub;
+    return this.tarjetasService.update(id, updateTarjetaDto, userId);
   }
 
   @Delete('/:id/delete')
-  remove(@Param('id') id: string) {
-    return this.tarjetasService.remove(id);
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('/protected')
-  protectedRoute() {
-    return {
-      message: 'Esta es una ruta protegida',
-    };
+  remove(@Param('id') id: string, @Req() req) {
+    const user = req['user'];
+    const userId = user.sub;
+    return this.tarjetasService.remove(id, userId);
   }
 }

@@ -28,6 +28,12 @@ export class Tarjeta {
   entity: string;
 
   @Prop({
+    required: true,
+    ref: 'User',
+  })
+  user: string;
+
+  @Prop({
     timestamps: true,
   })
   createdAt: Date;
