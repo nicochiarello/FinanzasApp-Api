@@ -6,10 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { TarjetasService } from './tarjetas.service';
 import { CreateTarjetaDto } from './dto/create-tarjeta.dto';
 import { UpdateTarjetaDto } from './dto/update-tarjeta.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('/api/tarjetas')
 export class TarjetasController {
@@ -20,9 +23,10 @@ export class TarjetasController {
     return this.tarjetasService.create(createTarjetaDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get('/all')
-  findAll() {
-    return this.tarjetasService.findAll();
+  findAll(@Req() req: Request) {
+    return this.tarjetasService.findAll(req);
   }
 
   @Get('/:id/details')
@@ -38,5 +42,13 @@ export class TarjetasController {
   @Delete('/:id/delete')
   remove(@Param('id') id: string) {
     return this.tarjetasService.remove(id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/protected')
+  protectedRoute() {
+    return {
+      message: 'Esta es una ruta protegida',
+    };
   }
 }

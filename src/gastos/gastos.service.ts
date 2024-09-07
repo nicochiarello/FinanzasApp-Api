@@ -9,8 +9,11 @@ import { Model } from 'mongoose';
 export class GastosService {
   constructor(@InjectModel(Gasto.name) private gastoModel: Model<Gasto>) {}
 
-  async create(createGastoDto: CreateGastoDto) {
-    const createdGasto = await this.gastoModel.create(createGastoDto);
+  async create(user, createGastoDto: CreateGastoDto) {
+    const createdGasto = await this.gastoModel.create({
+      ...createGastoDto,
+      user,
+    });
 
     return {
       message: 'Gasto creado correctamente',
@@ -18,7 +21,7 @@ export class GastosService {
     };
   }
 
-  async findAll(month: number, year: number) {
+  async findAll(user, month: number, year: number) {
     let query = {};
 
     if (month && year) {
@@ -33,7 +36,9 @@ export class GastosService {
       };
     }
 
-    const gastos = await this.gastoModel.find(query).sort({ createdAt: -1 });
+    const gastos = await this.gastoModel
+      .find({ ...query, user })
+      .sort({ createdAt: -1 });
 
     return {
       gastos,
@@ -41,11 +46,23 @@ export class GastosService {
     };
   }
 
-  async findOne(id: string) {
-    return await this.gastoModel.findById(id);
+  async findOne(id: string, userId) {
+    const foundGasto = await this.gastoModel.findById(id);
+
+    if (foundGasto.user !== userId) {
+      throw new Error('No tienes permisos para ver este gasto');
+    }
+
+    return foundGasto;
   }
 
-  async update(id: string, updateGastoDto: UpdateGastoDto) {
+  async update(id: string, updateGastoDto: UpdateGastoDto, userId) {
+    const foundGasto = await this.gastoModel.findById(id);
+
+    if (foundGasto.user !== userId) {
+      throw new Error('No tienes permisos para actualizar este gasto');
+    }
+
     const updated = await this.gastoModel.findByIdAndUpdate(
       {
         _id: id,
@@ -64,8 +81,14 @@ export class GastosService {
     };
   }
 
-  async remove(id: string) {
-    await this.gastoModel.findByIdAndDelete(id);
+  async remove(id: string, userId) {
+    const foundGasto = await this.gastoModel.findById(id);
+
+    if (foundGasto.user !== userId) {
+      throw new Error('No tienes permisos para eliminar este gasto');
+    }
+
+    await this.gastoModel.deleteOne;
 
     return {
       message: 'Gasto eliminado correctamente',

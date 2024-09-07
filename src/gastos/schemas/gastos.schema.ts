@@ -14,6 +14,12 @@ export class Gasto {
 
   @Prop({
     required: true,
+    ref: 'User',
+  })
+  user: string;
+
+  @Prop({
+    required: true,
   })
   value: number;
 }

@@ -18,7 +18,10 @@ export class TarjetasService {
     };
   }
 
-  async findAll() {
+  async findAll(req: Request) {
+    const user = req['user'];
+
+    console.log(user);
     const tarjetas = await this.servicioModel.find().sort({ createdAt: -1 });
 
     return {
