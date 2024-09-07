@@ -88,7 +88,7 @@ export class GastosService {
       throw new Error('No tienes permisos para eliminar este gasto');
     }
 
-    await this.gastoModel.deleteOne;
+    await this.gastoModel.deleteOne({ _id: id });
 
     return {
       message: 'Gasto eliminado correctamente',
