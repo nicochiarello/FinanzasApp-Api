@@ -18,6 +18,12 @@ export class Servicio {
   value: number;
 
   @Prop({
+    required: true,
+    ref: 'User',
+  })
+  user: string;
+
+  @Prop({
     timestamps: true,
   })
   createdAt: Date;

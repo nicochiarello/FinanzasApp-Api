@@ -11,15 +11,15 @@ export class ServiciosService {
     @InjectModel(Servicio.name) private servicioModel: Model<Servicio>,
   ) {}
 
-  async create(createServicioDto: CreateServicioDto) {
-    await this.servicioModel.create(createServicioDto);
+  async create(createServicioDto: CreateServicioDto, userId: string) {
+    await this.servicioModel.create({ ...createServicioDto, user: userId });
 
     return {
       message: 'Servicio creado correctamente',
     };
   }
 
-  async findAll(year: number, month: number) {
+  async findAll(userId, year: number, month: number) {
     let query = {};
 
     if (year && month) {
@@ -35,7 +35,7 @@ export class ServiciosService {
     }
 
     const servicios = await this.servicioModel
-      .find(query)
+      .find({ ...query, user: userId })
       .sort({ createdAt: -1 });
 
     return {
@@ -44,11 +44,45 @@ export class ServiciosService {
     };
   }
 
-  async findOne(id: number) {
-    return await this.servicioModel.findById(id);
+  async findOne(id: number, userId: string) {
+    const foundServicio = await this.servicioModel.findById(id);
+
+    if (!foundServicio) {
+      return {
+        message: 'Servicio no encontrado',
+      };
+    }
+
+    if (foundServicio.user !== userId) {
+      return {
+        message: 'No tienes permisos para ver este servicio',
+      };
+    }
+
+    return {
+      servicio: foundServicio,
+    };
   }
 
-  async update(id: string, updateServicioDto: UpdateServicioDto) {
+  async update(
+    id: string,
+    updateServicioDto: UpdateServicioDto,
+    userId: string,
+  ) {
+    const foundServicio = await this.servicioModel.findById(id);
+
+    if (!foundServicio) {
+      return {
+        message: 'Servicio no encontrado',
+      };
+    }
+
+    if (foundServicio.user !== userId) {
+      return {
+        message: 'No tienes permisos para actualizar este servicio',
+      };
+    }
+
     await this.servicioModel.findByIdAndUpdate(
       {
         _id: id,
@@ -66,7 +100,21 @@ export class ServiciosService {
     };
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
+    const foundServicio = await this.servicioModel.findById(id);
+
+    if (!foundServicio) {
+      return {
+        message: 'Servicio no encontrado',
+      };
+    }
+
+    if (foundServicio.user !== userId) {
+      return {
+        message: 'No tienes permisos para eliminar este servicio',
+      };
+    }
+
     await this.servicioModel.findByIdAndDelete(id);
 
     return {
