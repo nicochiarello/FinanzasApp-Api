@@ -12,5 +12,6 @@ import { Servicio, ServicioSchema } from './schemas/servicio.schema';
   ],
   controllers: [ServiciosController],
   providers: [ServiciosService],
+  exports: [ServiciosService],
 })
 export class ServiciosModule {}

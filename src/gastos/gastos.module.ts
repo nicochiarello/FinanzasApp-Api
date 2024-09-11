@@ -15,5 +15,6 @@ import { MongooseModule } from '@nestjs/mongoose';
   ],
   controllers: [GastosController],
   providers: [GastosService],
+  exports: [GastosService],
 })
 export class GastosModule {}

@@ -15,5 +15,6 @@ import { Cuota, CuotaSchema } from './schemas/cuota.schema';
   ],
   controllers: [CuotasController],
   providers: [CuotasService],
+  exports: [CuotasService],
 })
 export class CuotasModule {}

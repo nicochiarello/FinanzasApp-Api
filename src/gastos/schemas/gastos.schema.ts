@@ -22,6 +22,11 @@ export class Gasto {
     required: true,
   })
   value: number;
+
+  @Prop({
+    required: false,
+  })
+  createdAt: Date;
 }
 
 export const GastoSchema = SchemaFactory.createForClass(Gasto);

@@ -8,6 +8,7 @@ import { CuotasModule } from './cuotas/cuotas.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { BalanceModule } from './balance/balance.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     CuotasModule,
     UsersModule,
     AuthModule,
+    BalanceModule,
   ],
   controllers: [AppController],
   providers: [],
