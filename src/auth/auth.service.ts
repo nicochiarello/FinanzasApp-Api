@@ -3,7 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { SignInDto } from './dto/sing-in.dto';
+import { SignupDto } from './dto/sing-up.dto';
 import { UsersService } from 'src/users/users.service';
 import { LogInDto } from './dto/log-in.dto';
 import { compare } from 'bcrypt';
@@ -15,7 +15,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
-  async signIn(singInDto: SignInDto) {
+  async signup(singInDto: SignupDto) {
     // check if the user already exists
     const user = await this.usersService.findUserByEmail(singInDto.email);
 
@@ -24,10 +24,15 @@ export class AuthService {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    await this.usersService.create(singInDto);
+    const createdUser = await this.usersService.create(singInDto);
+
+    const payload = {
+      email: createdUser.email,
+      sub: createdUser._id,
+    };
 
     return {
-      message: 'Usuario creado con éxito',
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 

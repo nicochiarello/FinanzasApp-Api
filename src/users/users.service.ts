@@ -27,6 +27,19 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
+  async getMyProfile(userId: string) {
+    const foundUser = await this.userModel.findById(userId).exec();
+
+    if (!foundUser) {
+      return null;
+    }
+
+    return {
+      email: foundUser.email,
+      name: foundUser.name,
+    };
+  }
+
   // findAll() {
   //   return `This action returns all users`;
   // }
