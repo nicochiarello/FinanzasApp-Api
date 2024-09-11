@@ -14,8 +14,9 @@ import { CreateTarjetaDto } from './dto/create-tarjeta.dto';
 import { UpdateTarjetaDto } from './dto/update-tarjeta.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+// /api/tarjetas
 @UseGuards(AuthGuard)
-@Controller('/api/tarjetas')
+@Controller('/tarjetas')
 export class TarjetasController {
   constructor(private readonly tarjetasService: TarjetasService) {}
 

@@ -15,8 +15,9 @@ import { CreateGastoDto } from './dto/create-gasto.dto';
 import { UpdateGastoDto } from './dto/update-gasto.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+// /api/gastos
 @UseGuards(AuthGuard)
-@Controller('/api/gastos')
+@Controller('/gastos')
 export class GastosController {
   constructor(private readonly gastosService: GastosService) {}
 

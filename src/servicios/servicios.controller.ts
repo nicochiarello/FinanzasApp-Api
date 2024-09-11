@@ -15,8 +15,9 @@ import { CreateServicioDto } from './dto/create-servicio.dto';
 import { UpdateServicioDto } from './dto/update-servicio.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+// /api/servicios
 @UseGuards(AuthGuard)
-@Controller('/api/servicios')
+@Controller('/servicios')
 export class ServiciosController {
   constructor(private readonly serviciosService: ServiciosService) {}
 

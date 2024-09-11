@@ -15,8 +15,9 @@ import { CreateCuotaDto } from './dto/create-cuota.dto';
 import { UpdateCuotaDto } from './dto/update-cuota.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
+// /api/cuotas
 @UseGuards(AuthGuard)
-@Controller('/api/cuotas')
+@Controller('/cuotas')
 export class CuotasController {
   constructor(private readonly cuotasService: CuotasService) {}
 
