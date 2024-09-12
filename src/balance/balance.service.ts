@@ -4,6 +4,7 @@ import { CuotasService } from 'src/cuotas/cuotas.service';
 import { ServiciosService } from 'src/servicios/servicios.service';
 import { Cuota } from 'src/cuotas/schemas/cuota.schema';
 import { Gasto } from 'src/gastos/schemas/gastos.schema';
+import { Servicio } from 'src/servicios/schemas/servicio.schema';
 
 @Injectable()
 export class BalanceService {
@@ -27,8 +28,8 @@ export class BalanceService {
     // Get all servicios from the current month
     const servicios = await this.serviciosService.findAll(
       userId,
-      currentMonth,
       currentYear,
+      currentMonth,
     );
 
     return {
@@ -42,7 +43,7 @@ export class BalanceService {
       servicios: {
         items: servicios.items,
         total: servicios.servicios.reduce(
-          (acc, servicio) => acc + servicio.value,
+          (acc, servicio: Servicio) => acc + servicio.value,
           0,
         ),
       },
