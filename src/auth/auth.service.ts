@@ -40,13 +40,17 @@ export class AuthService {
     const user = await this.usersService.findUserByEmail(loginDto.email);
 
     if (!user) {
-      throw new ConflictException('Usuario no encontrado');
+      throw new ConflictException({
+        email: 'email not found',
+      });
     }
 
     const passwordMatch = await compare(loginDto.password, user.password);
 
     if (!passwordMatch) {
-      throw new UnauthorizedException('Contraseña incorrecta');
+      throw new UnauthorizedException({
+        password: 'incorrect password',
+      });
     }
 
     const payload = {
