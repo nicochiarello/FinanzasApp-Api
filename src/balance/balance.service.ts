@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { GastosService } from 'src/gastos/gastos.service';
-import { CuotasService } from 'src/cuotas/cuotas.service';
-import { ServiciosService } from 'src/servicios/servicios.service';
-import { Cuota } from 'src/cuotas/schemas/cuota.schema';
-import { Gasto } from 'src/gastos/schemas/gastos.schema';
-import { Servicio } from 'src/servicios/schemas/servicio.schema';
+import { GastosService } from '../gastos/gastos.service';
+import { CuotasService } from '../cuotas/cuotas.service';
+import { ServiciosService } from '../servicios/servicios.service';
+import { Cuota } from '../cuotas/schemas/cuota.schema';
+import { Gasto } from '../gastos/schemas/gastos.schema';
+import { Servicio } from '../servicios/schemas/servicio.schema';
 
 @Injectable()
 export class BalanceService {
